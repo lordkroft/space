@@ -1,7 +1,6 @@
 #!/bin/bash
 
 echo "Vova DevoPes!"
-echo "test"
 
 GIT_COMMIT=$(git rev-parse --short HEAD)
 echo ${GIT_COMMIT}
