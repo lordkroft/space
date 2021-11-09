@@ -2,8 +2,8 @@
 
 echo "Vova DevoPes!"
 
-GIT_COMMIT=$(git rev-parse --short HEAD)
-echo ${GIT_COMMIT}
+#GIT_COMMIT=$(git rev-parse --short HEAD)
+#echo ${GIT_COMMIT}
 
 
 #environment {
