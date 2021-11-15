@@ -16,12 +16,12 @@ pipeline {
     }
 
     stage('Build image') {
-        sh "docker build --build-arg APP_NAME=flask -t ${REPOSITORY_URI}:latest -f Dockerfile ."
+        sh "docker build --build-arg APP_NAME=flask -t ${REPOSITORY_URI}:${IMAGE_TAG} -f Dockerfile ."
     }
 
     stage('Push image') {
         docker.withRegistry('https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com', 'ecr:${AWS_DEFAULT_REGION}:lordkroft') {
-            sh "docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/space-registry:latest"
+            sh "docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/space-registry:${IMAGE_TAG}"
         }
     }
   }
