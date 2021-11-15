@@ -7,22 +7,33 @@ pipeline {
         IMAGE_TAG="latest"
         REPOSITORY_URI ="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
     }
-     
-    node {
-    def app
+    
+    stages {
 
-    stage('Clone repository') {
-        git branch: "master", url: "git@github.com:/lordkroft/space.git", credentialsId: "lordkroft"
+        stage('Cloning Git') {
+            steps {
+                git branch: "master", url: "git@github.com:/lordkroft/space.git", credentialsId: "lordkroft"
     }
-
-    stage('Build image') {
-        sh "docker build --build-arg APP_NAME=flask -t ${REPOSITORY_URI}:${IMAGE_TAG} -f Dockerfile ."
-    }
-
-    stage('Push image') {
-        docker.withRegistry('https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com', 'ecr:${AWS_DEFAULT_REGION}:lordkroft') {
-            sh "docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/space-registry:${IMAGE_TAG}"
+            }
         }
+
+    // Building Docker images
+    stage('Building image') {
+      steps{
+        script {
+          sh "docker build --build-arg APP_NAME=flask -t ${REPOSITORY_URI}:${IMAGE_TAG} -f Dockerfile .""
+        }
+      }
     }
-  }
+
+    // Uploading Docker images into AWS ECR
+    stage('Pushing to ECR') {
+     steps{
+         script {
+                docker.withRegistry('https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com', 'ecr:${AWS_DEFAULT_REGION}:lordkroft') {
+            sh "docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/space-registry:${IMAGE_TAG}"
+         }
+        }
+      }
+    }
 }
